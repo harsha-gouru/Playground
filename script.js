@@ -27,33 +27,9 @@ d3.json("graph_data.json").then(data => {
         .join("circle")
         .attr("class", "node")
         .attr("r", 5)
-        .call(drag(simulation));
-
-    // Create the graph node labels.
-
-    var node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(data.nodes)
-        .join("circle")
-        .attr("class", "node")
-        .attr("r", 5)
         .call(drag(simulation))
-        .on("click", function(event, d) {
-            // Show the tooltip and set its text to the node data.
-            d3.select("#tooltip")
-                .style("left", event.pageX + "px")
-                .style("top", event.pageY + "px")
-                .style("visibility", "visible")
-                .text(JSON.stringify(d));
-        })
-        .on("mouseout", function() {
-            // Hide the tooltip.
-            d3.select("#tooltip")
-                .style("visibility", "hidden");
-        });
-
-
+        .on("click", handleNodeClick)
+        .on("mouseout", handleNodeMouseout);
 
     // Update the graph elements' positions after each tick of the simulation.
     simulation.on("tick", () => {
@@ -91,5 +67,28 @@ d3.json("graph_data.json").then(data => {
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended);
+    }
+
+    // Function to handle node click event
+    function handleNodeClick(event, d) {
+        // Create a subset of the node data containing only the desired properties
+        var tooltipData = {
+            id: d.id,
+            index: d.index
+        };
+
+        // Show the tooltip and set its text to the selected properties
+        d3.select("#tooltip")
+            .style("left", event.pageX + "px")
+            .style("top", event.pageY + "px")
+            .style("visibility", "visible")
+            .text(JSON.stringify(tooltipData));
+    }
+
+    // Function to handle node mouseout event
+    function handleNodeMouseout() {
+        // Hide the tooltip.
+        d3.select("#tooltip")
+            .style("visibility", "hidden");
     }
 });
